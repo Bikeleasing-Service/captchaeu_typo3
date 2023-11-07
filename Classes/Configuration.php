@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CaptchaEU\Typo3;
 
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
