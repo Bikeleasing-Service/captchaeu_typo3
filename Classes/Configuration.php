@@ -37,8 +37,12 @@ class Configuration
 			return;
 		}
 
+		$context = GeneralUtility::makeInstance(Context::class);
+        	$languageId = $context->getPropertyFromAspect('language', 'id');
+        	$language = $site->getLanguageById($languageId)->toArray();
+
 		// get site config
-		$siteConfiguration = $site->getConfiguration();
+		$siteConfiguration = !empty($language['captchaeu_host']) ? $language : $site->getConfiguration();
 
 		// assign values from site configuration
 		$this->host = trim($siteConfiguration['captchaeu_host'] ?? '');
