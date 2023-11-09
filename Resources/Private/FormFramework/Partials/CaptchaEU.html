@@ -2,14 +2,11 @@
 	xmlns:formvh="http://typo3.org/ns/TYPO3/CMS/Form/ViewHelpers"
 	xmlns:captchaeu="http://typo3.org/ns/CaptchaEU/Typo3/ViewHelpers"
 	data-namespace-typo3-fluid="true">
-
 	<formvh:renderRenderable renderable="{element}">
 		<f:variable name="conf" value="{captchaeu:configuration()}" />
-
 		<f:if condition="{conf.enabled}">
 			<f:then>
 				<f:asset.script defer="1" async="1" identifier="captchaeu" src="<f:format.htmlspecialchars>{conf.SDKJSPath}</f:format.htmlspecialchars>" />
-
 				<f:render partial="Field/Field" arguments="{element: element, doNotShowLabel: 1}" contentAs="elementContent">
 					<f:form.hidden
 						property="{element.identifier}"
@@ -37,43 +34,38 @@
 								// KROT setup
 								KROT.setup('<f:format.htmlspecialchars>{conf.keyPublic}</f:format.htmlspecialchars>');
 								KROT.KROT_HOST = '<f:format.htmlspecialchars>{conf.host}</f:format.htmlspecialchars>';
-
 								var input = document.getElementById('<f:format.htmlspecialchars>{element.uniqueIdentifier}</f:format.htmlspecialchars>');
 								var form = input.closest('form');
+								var formId = form.id.replace(/\D/g, "");
 								var btn = form.querySelector('[type="submit"]');
-
+								var submitButtonLabel = ""
+								var windowObjName = 'form' + formId + 'CptPassed';
+								window[windowObjName] = false;
 								// intercept form
 								KROT.interceptForm(form, true);
-
 								function btnClickHandler(e) {
 									// return if already intercepted
 									if(e.intercepted) return;
-
 									// prevent default
 									e.preventDefault();
-
 									// disable
 									btn.disabled = true;
-
 									// RUN captcha
 									KROT.getSolution().then((sol) => {
 										// write solution to hidden field
 										form.querySelector('#<f:format.htmlspecialchars>{element.uniqueIdentifier}</f:format.htmlspecialchars>').value = JSON.stringify(sol);
-
 										// re-enable button
 										btn.disabled = false;
 										btn.removeAttribute('disabled');
-
 										// prevent
 										e.intercepted = true;
-
 										// remove event
 										btn.removeEventListener('click', btnClickHandler);
-
+										//
+										window[windowObjName] = true
 										// submit the form
 										btn.click();
 									});
-
 									// add eventlistener
 									btn.addEventListener('click', btnClickHandler);
 								}
